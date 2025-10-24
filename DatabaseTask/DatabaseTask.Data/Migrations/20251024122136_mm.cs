@@ -5,7 +5,7 @@
 namespace DatabaseTask.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class init2 : Migration
+    public partial class mm : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
