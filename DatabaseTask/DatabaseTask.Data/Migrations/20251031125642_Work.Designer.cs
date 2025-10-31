@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DatabaseTask.Data.Migrations
 {
     [DbContext(typeof(DatabaseTaskDbContext))]
-    [Migration("20251031122644_TartuHaigla")]
-    partial class TartuHaigla
+    [Migration("20251031125642_Work")]
+    partial class Work
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,15 +27,13 @@ namespace DatabaseTask.Data.Migrations
 
             modelBuilder.Entity("DatabaseTask.Core.Domain.Department", b =>
                 {
-                    b.Property<Guid>("DepartmentID")
+                    b.Property<int>("DepartmentID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DepartmentID"));
 
                     b.Property<string>("DepartmentName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("HeadDoctor")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -53,12 +51,17 @@ namespace DatabaseTask.Data.Migrations
 
             modelBuilder.Entity("DatabaseTask.Core.Domain.Doctor", b =>
                 {
-                    b.Property<Guid>("DoctorID")
+                    b.Property<int>("DoctorID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
 
-                    b.Property<Guid?>("MedicineID")
-                        .HasColumnType("uniqueidentifier");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DoctorID"));
+
+                    b.Property<int?>("DepartmentID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MedicineID")
+                        .HasColumnType("int");
 
                     b.Property<int>("PhoneNuber")
                         .HasColumnType("int");
@@ -73,6 +76,8 @@ namespace DatabaseTask.Data.Migrations
 
                     b.HasKey("DoctorID");
 
+                    b.HasIndex("DepartmentID");
+
                     b.HasIndex("MedicineID");
 
                     b.ToTable("Doctors");
@@ -80,9 +85,11 @@ namespace DatabaseTask.Data.Migrations
 
             modelBuilder.Entity("DatabaseTask.Core.Domain.MedicalVisit", b =>
                 {
-                    b.Property<Guid>("MedicineID")
+                    b.Property<int>("MedicineID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MedicineID"));
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
@@ -98,9 +105,11 @@ namespace DatabaseTask.Data.Migrations
 
             modelBuilder.Entity("DatabaseTask.Core.Domain.Medicine", b =>
                 {
-                    b.Property<Guid>("MedicineID")
+                    b.Property<int>("MedicineID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MedicineID"));
 
                     b.Property<int>("Dose")
                         .HasColumnType("int");
@@ -120,9 +129,11 @@ namespace DatabaseTask.Data.Migrations
 
             modelBuilder.Entity("DatabaseTask.Core.Domain.Patient", b =>
                 {
-                    b.Property<Guid>("PatientID")
+                    b.Property<int>("PatientID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PatientID"));
 
                     b.Property<string>("Aadress")
                         .IsRequired()
@@ -134,8 +145,8 @@ namespace DatabaseTask.Data.Migrations
                     b.Property<int>("IdentificationNum")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("MedicalVisitMedicineID")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("MedicalVisitMedicineID")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -153,11 +164,11 @@ namespace DatabaseTask.Data.Migrations
 
             modelBuilder.Entity("DoctorMedicalVisit", b =>
                 {
-                    b.Property<Guid>("DoctorID")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("DoctorID")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("VisitIDMedicineID")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("VisitIDMedicineID")
+                        .HasColumnType("int");
 
                     b.HasKey("DoctorID", "VisitIDMedicineID");
 
@@ -168,6 +179,10 @@ namespace DatabaseTask.Data.Migrations
 
             modelBuilder.Entity("DatabaseTask.Core.Domain.Doctor", b =>
                 {
+                    b.HasOne("DatabaseTask.Core.Domain.Department", null)
+                        .WithMany("DoctorID")
+                        .HasForeignKey("DepartmentID");
+
                     b.HasOne("DatabaseTask.Core.Domain.Medicine", null)
                         .WithMany("DoctorID")
                         .HasForeignKey("MedicineID");
@@ -193,6 +208,11 @@ namespace DatabaseTask.Data.Migrations
                         .HasForeignKey("VisitIDMedicineID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("DatabaseTask.Core.Domain.Department", b =>
+                {
+                    b.Navigation("DoctorID");
                 });
 
             modelBuilder.Entity("DatabaseTask.Core.Domain.MedicalVisit", b =>

@@ -6,23 +6,20 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DatabaseTask.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class TartuHaigla : Migration
+    public partial class Work : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Employee");
-
             migrationBuilder.CreateTable(
                 name: "Departments",
                 columns: table => new
                 {
-                    DepartmentID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DepartmentID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     DepartmentName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhoneNumber = table.Column<int>(type: "int", nullable: false),
-                    HeadDoctor = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    PhoneNumber = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -33,7 +30,8 @@ namespace DatabaseTask.Data.Migrations
                 name: "MedicalVisits",
                 columns: table => new
                 {
-                    MedicineID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MedicineID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
@@ -46,7 +44,8 @@ namespace DatabaseTask.Data.Migrations
                 name: "Medicines",
                 columns: table => new
                 {
-                    MedicineID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MedicineID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Ingredient = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Dose = table.Column<int>(type: "int", nullable: false)
@@ -60,13 +59,14 @@ namespace DatabaseTask.Data.Migrations
                 name: "Patients",
                 columns: table => new
                 {
-                    PatientID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PatientID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     IdentificationNum = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PhoneNumber = table.Column<int>(type: "int", nullable: false),
                     Aadress = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MedicalVisitMedicineID = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    MedicalVisitMedicineID = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -82,15 +82,22 @@ namespace DatabaseTask.Data.Migrations
                 name: "Doctors",
                 columns: table => new
                 {
-                    DoctorID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DoctorID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Profession = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNuber = table.Column<int>(type: "int", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MedicineID = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    DepartmentID = table.Column<int>(type: "int", nullable: true),
+                    MedicineID = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Doctors", x => x.DoctorID);
+                    table.ForeignKey(
+                        name: "FK_Doctors_Departments_DepartmentID",
+                        column: x => x.DepartmentID,
+                        principalTable: "Departments",
+                        principalColumn: "DepartmentID");
                     table.ForeignKey(
                         name: "FK_Doctors_Medicines_MedicineID",
                         column: x => x.MedicineID,
@@ -102,8 +109,8 @@ namespace DatabaseTask.Data.Migrations
                 name: "DoctorMedicalVisit",
                 columns: table => new
                 {
-                    DoctorID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    VisitIDMedicineID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    DoctorID = table.Column<int>(type: "int", nullable: false),
+                    VisitIDMedicineID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -128,6 +135,11 @@ namespace DatabaseTask.Data.Migrations
                 column: "VisitIDMedicineID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Doctors_DepartmentID",
+                table: "Doctors",
+                column: "DepartmentID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Doctors_MedicineID",
                 table: "Doctors",
                 column: "MedicineID");
@@ -142,9 +154,6 @@ namespace DatabaseTask.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Departments");
-
-            migrationBuilder.DropTable(
                 name: "DoctorMedicalVisit");
 
             migrationBuilder.DropTable(
@@ -157,20 +166,10 @@ namespace DatabaseTask.Data.Migrations
                 name: "MedicalVisits");
 
             migrationBuilder.DropTable(
-                name: "Medicines");
+                name: "Departments");
 
-            migrationBuilder.CreateTable(
-                name: "Employee",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Employee", x => x.Id);
-                });
+            migrationBuilder.DropTable(
+                name: "Medicines");
         }
     }
 }

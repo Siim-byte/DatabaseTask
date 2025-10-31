@@ -8,11 +8,11 @@ namespace DatabaseTask.Core.Domain
 {
     public class Doctor
     {
-        public Guid DoctorID { get; set; }
+        public int DoctorID { get; set; }
         public string Profession { get; set; }
         public int PhoneNuber { get; set; }
         public string Title {  get; set; }
-        public ICollection<MedicalVisit> VisitID { get; set; }
+        public ICollection<MedicalVisit> MedicalVisits { get; set; }
 
     }
 }
