@@ -9,14 +9,12 @@ namespace DatabaseTask.Data
         public DatabaseTaskDbContext(DbContextOptions<DatabaseTaskDbContext> options)
             : base(options) { }
 
-        public DbSet<Employee> Employee { get; set; }
-        public DbSet<Absense> Absenses { get; set; }
-        public DbSet<Child> Children { get; set; }
-        public DbSet<ChildGroupHistory> ChildGroupHistories { get; set; }
-        public DbSet<Employee> Employees { get; set; }
-        public DbSet<Group> Groups { get; set; }
-        public DbSet<JobTitle> JobTitles { get; set; }
-        public DbSet<Menu> Menus { get; set; }
-        public DbSet<Queue> Queues { get; set; }
+        // näide, kuidas teha, kui lisate domaini alla ühe objekti
+        // migratsioonid peavad tulema siia libary-sse e TARge20.Data alla.
+        public DbSet<Patient> Patients { get; set; }
+        public DbSet<Doctor> Doctors { get; set; }
+        public DbSet<MedicalVisit> MedicalVisits { get; set; }
+        public DbSet<Department> Departments { get; set; }
+        public DbSet<Medicine> Medicines { get; set; }
     }
 }

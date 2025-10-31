@@ -4,6 +4,7 @@ using DatabaseTask.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DatabaseTask.Data.Migrations
 {
     [DbContext(typeof(DatabaseTaskDbContext))]
-    partial class DatabaseTaskDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251031122813_TartuHaigla2")]
+    partial class TartuHaigla2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,6 +32,10 @@ namespace DatabaseTask.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("DepartmentName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HeadDoctor")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -50,9 +57,6 @@ namespace DatabaseTask.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("DepartmentID")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid?>("MedicineID")
                         .HasColumnType("uniqueidentifier");
 
@@ -68,8 +72,6 @@ namespace DatabaseTask.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("DoctorID");
-
-                    b.HasIndex("DepartmentID");
 
                     b.HasIndex("MedicineID");
 
@@ -166,10 +168,6 @@ namespace DatabaseTask.Data.Migrations
 
             modelBuilder.Entity("DatabaseTask.Core.Domain.Doctor", b =>
                 {
-                    b.HasOne("DatabaseTask.Core.Domain.Department", null)
-                        .WithMany("DoctorID")
-                        .HasForeignKey("DepartmentID");
-
                     b.HasOne("DatabaseTask.Core.Domain.Medicine", null)
                         .WithMany("DoctorID")
                         .HasForeignKey("MedicineID");
@@ -195,11 +193,6 @@ namespace DatabaseTask.Data.Migrations
                         .HasForeignKey("VisitIDMedicineID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("DatabaseTask.Core.Domain.Department", b =>
-                {
-                    b.Navigation("DoctorID");
                 });
 
             modelBuilder.Entity("DatabaseTask.Core.Domain.MedicalVisit", b =>

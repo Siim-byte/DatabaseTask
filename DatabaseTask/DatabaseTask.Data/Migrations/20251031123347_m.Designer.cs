@@ -4,6 +4,7 @@ using DatabaseTask.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DatabaseTask.Data.Migrations
 {
     [DbContext(typeof(DatabaseTaskDbContext))]
-    partial class DatabaseTaskDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251031123347_m")]
+    partial class m
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,6 +35,13 @@ namespace DatabaseTask.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("DoctorID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("HeadDoctor")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -41,6 +51,8 @@ namespace DatabaseTask.Data.Migrations
 
                     b.HasKey("DepartmentID");
 
+                    b.HasIndex("DoctorID");
+
                     b.ToTable("Departments");
                 });
 
@@ -48,9 +60,6 @@ namespace DatabaseTask.Data.Migrations
                 {
                     b.Property<Guid>("DoctorID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("DepartmentID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("MedicineID")
@@ -68,8 +77,6 @@ namespace DatabaseTask.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("DoctorID");
-
-                    b.HasIndex("DepartmentID");
 
                     b.HasIndex("MedicineID");
 
@@ -164,12 +171,15 @@ namespace DatabaseTask.Data.Migrations
                     b.ToTable("DoctorMedicalVisit");
                 });
 
+            modelBuilder.Entity("DatabaseTask.Core.Domain.Department", b =>
+                {
+                    b.HasOne("DatabaseTask.Core.Domain.Doctor", null)
+                        .WithMany("DepartmentID")
+                        .HasForeignKey("DoctorID");
+                });
+
             modelBuilder.Entity("DatabaseTask.Core.Domain.Doctor", b =>
                 {
-                    b.HasOne("DatabaseTask.Core.Domain.Department", null)
-                        .WithMany("DoctorID")
-                        .HasForeignKey("DepartmentID");
-
                     b.HasOne("DatabaseTask.Core.Domain.Medicine", null)
                         .WithMany("DoctorID")
                         .HasForeignKey("MedicineID");
@@ -197,9 +207,9 @@ namespace DatabaseTask.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DatabaseTask.Core.Domain.Department", b =>
+            modelBuilder.Entity("DatabaseTask.Core.Domain.Doctor", b =>
                 {
-                    b.Navigation("DoctorID");
+                    b.Navigation("DepartmentID");
                 });
 
             modelBuilder.Entity("DatabaseTask.Core.Domain.MedicalVisit", b =>
